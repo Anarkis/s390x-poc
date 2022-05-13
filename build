@@ -3,14 +3,4 @@ set -e -x
 
 echo "RUNNING BUILD"
 
-source $(dirname $0)/version
-
-cd $(dirname $0)/..
-
-rm -rf bin/*
-mkdir -p bin
-
-for arch in ${PLATFORMS}
-do
-   ARCH=${arch} make build
-done
+ARCH=s390x make build

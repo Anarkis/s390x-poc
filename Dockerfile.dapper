@@ -10,7 +10,7 @@ RUN apk add openssl docker wget
 ENV GOPATH=/go PATH=/go/bin:/usr/local/go/bin:${PATH} SHELL=/bin/bash
 RUN mkdir -p /.docker/cli-plugins
 RUN  ln -sf /bin/bash /bin/sh # use bash for subsequent variable expansion
-ENV DOCKER_BUILDX_URL_s390x=https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-s390x \
+ENV DOCKER_BUILDX_URL_s390x=https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-${ARCH} \
     DOCKER_BUILDX_URL=DOCKER_BUILDX_URL_${ARCH}
 RUN wget -O - ${!DOCKER_BUILDX_URL} > /.docker/cli-plugins/docker-buildx && chmod +x /.docker/cli-plugins/docker-buildx
 ENV DOCKER_CLI_EXPERIMENTAL=enabled \
