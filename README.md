@@ -20,10 +20,13 @@ In order to test this code, you should:
 git clone https://github.com/Anarkis/s390x-poc.git
 docker run -v YOUR_GIT_PATH:/test  -v /var/run/docker.sock:/var/run/docker.sock -ti --privileged rancher/dapper:v0.5.7 sh
 >> Inside the docker
-cd /test/s390x-poc/
+cd /test/
 dapper ci
 ```
+### Running in other arch rather than s390x
+You should change the ENV `DAPPER_HOST_ARCH` inside the `Dockerfile.dapper` to fit the arch that you are working on
 
+## Expected results
 We consider a **failure** when we see an output like this:
 ```
 + echo 'RUNNING BUILD'
@@ -48,6 +51,26 @@ Executing build.sh
 SUCCESS!!!
 ```
 ( Makefile can execute ./build.sh, and the script is executed properly)
+
+### Docker images involved
+
+#### rancher/hardened-build-base
+- alpine 3.15.4
+- libseccomp libseccomp-2.5.2-r0
+- scmp_sys_resolver faccessat2 > 439
+- docker version 20.10.14 build a224086349269551becacce16e5842ceeb2a98d6
+
+#### s390x/docker:18.06
+- alpine 3.9.4
+- NO libseccomp
+- NO scmp_sys_resolver
+- Docker version 18.06.3-ce, build d7080c1
+
+#### rancher/dapper:v0.5.7
+- alpine 3.9.4
+- NO libseccomp
+- NO scmp_sys_resolver
+- Docker version 18.06.3-ce, build d7080c1
 
 ### VM 1
 ```
