@@ -20,10 +20,13 @@ In order to test this code, you should:
 git clone https://github.com/Anarkis/s390x-poc.git
 docker run -v YOUR_GIT_PATH:/test  -v /var/run/docker.sock:/var/run/docker.sock -ti --privileged rancher/dapper:v0.5.7 sh
 >> Inside the docker
-cd /test/s390x-poc/
+cd /test/
 dapper ci
 ```
+### Running in other arch rather than s390x
+You should change the ENV `DAPPER_HOST_ARCH` inside the `Dockerfile.dapper` to fit the arch that you are working on
 
+## Expected results
 We consider a **failure** when we see an output like this:
 ```
 + echo 'RUNNING BUILD'
@@ -49,13 +52,66 @@ SUCCESS!!!
 ```
 ( Makefile can execute ./build.sh, and the script is executed properly)
 
+### Docker images involved
+
+#### rancher/hardened-build-base
+- alpine 3.15.4
+- libseccomp libseccomp-2.5.2-r0
+- scmp_sys_resolver faccessat2 > 439
+- docker version 20.10.14 build a224086349269551becacce16e5842ceeb2a98d6
+
+#### s390x/docker:18.06
+- alpine 3.9.4
+- NO libseccomp
+- NO scmp_sys_resolver
+- Docker version 18.06.3-ce, build d7080c1
+
+#### rancher/dapper:v0.5.7
+- alpine 3.9.4
+- NO libseccomp
+- NO scmp_sys_resolver
+- Docker version 18.06.3-ce, build d7080c1
+
 ### VM 1
 ```
-ARCH x86
+ARCH amd64
 VM on SLES 15-SP3
 libseccomp2: libseccomp2-2.5.3-150300.10.8.1.x86_64
 Docker version 20.10.12-ce, build 459d0dfbbb51
 ```
+<details>
+<summary>Full config</summary>
+
+    Client:
+        Version:           20.10.12-ce
+        API version:       1.41
+        Go version:        go1.16.13
+        Git commit:        459d0dfbbb51
+        Built:             Mon Jan 17 12:00:00 2022
+        OS/Arch:           linux/amd64
+        Context:           default
+        Experimental:      true
+
+    Server:
+        Engine:
+            Version:          20.10.12-ce
+            API version:      1.41 (minimum version 1.12)
+            Go version:       go1.16.13
+            Git commit:       459d0dfbbb51
+            Built:            Mon Jan 17 12:00:00 2022
+            OS/Arch:          linux/amd64
+            Experimental:     false
+        containerd:
+            Version:          v1.4.12
+            GitCommit:        7b11cfaabd73bb80907dd23182b9347b4245eb5d
+        runc:
+            Version:          1.0.3
+            GitCommit:
+        docker-init:
+            Version:          0.1.5_catatonit
+            GitCommit:
+</details>
+
 This config works
 
 ### VM2
@@ -65,6 +121,40 @@ VM on SLES 15-SP3
 libseccomp2: libseccomp2-2.5.3-150300.10.8.1.s390x
 Docker version 20.10.12-ce, build 459d0dfbbb51
 ```
+<details>
+<summary>Full config</summary>
+
+    Client:
+        Version:           20.10.12-ce
+        API version:       1.41
+        Go version:        go1.16.13
+        Git commit:        459d0dfbbb51
+        Built:             Mon Jan 17 12:00:00 2022
+        OS/Arch:           linux/s390x
+        Context:           default
+        Experimental:      true
+
+    Server:
+        Engine:
+            Version:          20.10.12-ce
+            API version:      1.41 (minimum version 1.12)
+            Go version:       go1.16.13
+            Git commit:       459d0dfbbb51
+            Built:            Mon Jan 17 12:00:00 2022
+            OS/Arch:          linux/s390x
+            Experimental:     false
+        containerd:
+            Version:          v1.4.12
+            GitCommit:        7b11cfaabd73bb80907dd23182b9347b4245eb5d
+        runc:
+            Version:          1.0.3
+            GitCommit:
+        docker-init:
+            Version:          0.1.5_catatonit
+            GitCommit:
+
+</details>
+
 This config **does not** work
 
 ### VM3
