@@ -6,10 +6,10 @@ echo "Executing $0"
 echo "SUCCESS!!!"
 
 cat secrets.txt | docker login --username luistt --password-stdin
-docker pull ubuntu
-docker tag ubuntu luistt/s390x-poc:latest
+echo $DOCKER_PASS | docker login --username luistt --password-stdin
+docker build -t luistt/s390x-poc:latest -f Dockerfile --no-cache .
 docker push luistt/s390x-poc:latest
 
-dockery system prune --all -f
+#docker system prune --all -f
 
 echo "Finish pushing"
